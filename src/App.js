@@ -1,23 +1,38 @@
-import logo from './logo.svg';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchTodos, clearTodos } from './store';
 import './App.css';
 
 function App() {
+  const dispatch = useDispatch();
+  const { todos, loading, error } = useSelector((state) => state.todos);
+
+  useEffect(() => {
+    dispatch(fetchTodos()); 
+  }, [dispatch]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+      <h1 className="title">Swapi TODO</h1>
+
+      {loading && <p>Завантаження...</p>}
+      {error && <p className="error">{error}</p>}
+
+      {!loading && !error && (
+        <ul className="todo-list">
+          {todos.map((todo, index) => (
+            <li key={index} className="todo-item">
+              {todo.name}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <footer className="footer">
+        <button onClick={() => dispatch(clearTodos())} className="button clear-button">
+          Очистити TODO
+        </button>
+      </footer>
     </div>
   );
 }
