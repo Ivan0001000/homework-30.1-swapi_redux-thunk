@@ -2,6 +2,7 @@ import { configureStore, createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   todos: [],
+  selectedTodo: null, 
   loading: false,
   error: null,
 };
@@ -24,11 +25,15 @@ const todoSlice = createSlice({
     },
     clearTodos: (state) => {
       state.todos = [];
+      state.selectedTodo = null; 
+    },
+    selectTodo: (state, action) => {
+      state.selectedTodo = action.payload; 
     },
   },
 });
 
-export const { fetchStart, fetchSuccess, fetchError, clearTodos } = todoSlice.actions;
+export const { fetchStart, fetchSuccess, fetchError, clearTodos, selectTodo } = todoSlice.actions;
 
 export const fetchTodos = () => async (dispatch) => {
   dispatch(fetchStart());
@@ -37,7 +42,7 @@ export const fetchTodos = () => async (dispatch) => {
     const data = await response.json();
     dispatch(fetchSuccess(data.results));
   } catch (error) {
-    dispatch(fetchError('Помилка завантаження даних'));
+    dispatch(fetchError('Ошибка загрузки данных'));
   }
 };
 

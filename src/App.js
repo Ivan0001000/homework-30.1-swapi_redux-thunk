@@ -1,38 +1,50 @@
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchTodos, clearTodos } from './store';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchTodos, clearTodos, selectTodo } from './store';
 import './App.css';
 
 function App() {
   const dispatch = useDispatch();
-  const { todos, loading, error } = useSelector((state) => state.todos);
+  const { todos, selectedTodo, loading, error } = useSelector((state) => state.todos);
 
   useEffect(() => {
-    dispatch(fetchTodos()); 
+    dispatch(fetchTodos());
   }, [dispatch]);
 
+  const handleClear = () => {
+    dispatch(clearTodos());
+  };
+
+  const handleSelect = (todo) => {
+    dispatch(selectTodo(todo)); 
+  };
+
   return (
-    <div className="app">
-      <h1 className="title">Swapi TODO</h1>
-
-      {loading && <p>Завантаження...</p>}
+    <div className="app-container">
+      <h1>TODO List</h1>
+      {loading && <p>Загрузка...</p>}
       {error && <p className="error">{error}</p>}
+      <ul className="todo-list">
+        {todos.map((todo, index) => (
+          <li
+            key={index}
+            className="todo-item"
+            onClick={() => handleSelect(todo)} 
+          >
+            {todo.name}
+          </li>
+        ))}
+      </ul>
+      <button className="clear-button" onClick={handleClear}>
+        Очистить список
+      </button>
 
-      {!loading && !error && (
-        <ul className="todo-list">
-          {todos.map((todo, index) => (
-            <li key={index} className="todo-item">
-              {todo.name}
-            </li>
-          ))}
-        </ul>
+      {selectedTodo && (
+        <div className="selected-todo">
+          <h2>Детальная информация</h2>
+          <pre>{JSON.stringify(selectedTodo, null, 2)}</pre>
+        </div>
       )}
-
-      <footer className="footer">
-        <button onClick={() => dispatch(clearTodos())} className="button clear-button">
-          Очистити TODO
-        </button>
-      </footer>
     </div>
   );
 }
